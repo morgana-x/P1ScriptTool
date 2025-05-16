@@ -5,6 +5,4 @@ https://github.com/Kateaa1/Revelations-Persona-Deloc-Docs was the main source of
 
 # P1ScriptTool
 
-A small tool for extracting Persona 1 scripts
-
-Repacking is planned, but I kinda started this tool at 12AM and now it's 3AM at time of writing and publishing the current state of this tool :(
+A small tool for extracting and repacking Persona 1 scripts/text dialogue
