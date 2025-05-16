@@ -2,7 +2,7 @@
 {
     public class P1String
     {
-        public static string ReadBinaryString(BinaryReader br)
+        public static string ReadPersonaString(BinaryReader br)
         {
             string str = "";
             int currentByte = 0;
@@ -16,41 +16,57 @@
                     break;
                 }
 
-                if (currentByte == 0x80)
-                {
-                    int type = currentByte;
-                    currentByte = br.ReadByte();
-                    str += GetCharString(currentByte, type);
-                    continue;
-                }
-
-                str += GetCharString(currentByte);
+                str += FromPersonaChar(currentByte);
             }
 
             return str;
         }
-
-        public static string GetCharString(int chr, int type=0)
+    
+        public static byte[] ToPersonaString(string str)
         {
-            if ( type == 0x80 && CharsetUpper.ContainsKey(chr))
-                return (CharsetUpper[chr]).ToString();
+            List<byte> byteList = new List<byte>();
+            for (int i=0; i<str.Length; i++)
+            {
+                if ( i+3 < str.Length && str[i] == '0' && str[i+1] == 'x' )
+                {
+                    byteList.Add(byte.Parse( str[i+2].ToString() + str[i+3].ToString(),System.Globalization.NumberStyles.HexNumber));
+                    i += 3;
+                    continue;
+                }
 
-            if (type == 0x80 && CharsetSpecial.ContainsKey(chr))
-                return (CharsetSpecial[chr]);
+                var c = ToPersonaChar(str[i], CharSet);
 
-            if (CharsetLower.ContainsKey(chr))
-                return CharsetLower[chr].ToString();
+                if (c == -1)
+                    continue;
 
-            if (CharsetUpper.ContainsKey(chr))
-                return CharsetUpper[chr].ToString();
-
-            if (type != 0)
-                return $"0x{type.ToString("X")}(0x{chr.ToString("X")})";
-
-            return $"0x{chr.ToString("X")}";
+                byteList.Add((byte)c); 
+            }
+            return byteList.ToArray();
         }
 
-        public static Dictionary<int, char> CharsetLower = new Dictionary<int, char>()
+        private static int ToPersonaChar(char c, Dictionary<int, char> dict)
+        {
+            foreach (var a in dict)
+            {
+                if (a.Value == c)
+                    return a.Key;
+            }
+            return -1;
+        }
+
+        public static string FromPersonaChar(int chr)
+        {
+            if (CharSet.ContainsKey(chr))
+            {
+                string str = CharSet[chr].ToString();
+                if (str == "\"") str = "\\\"";
+                return str;
+            }
+
+            return $"0x{chr.ToString("X2")}";
+        }
+
+        public static Dictionary<int, char> CharSet = new Dictionary<int, char>()
         {
             [0] = ' ',
 
@@ -85,10 +101,10 @@
             [0x65] = ',',
             [0x68] = ':',
 
-        };
-        public static Dictionary<int, char> CharsetUpper = new Dictionary<int, char>()
-        {
+            [0x80] = '', // There is an invisible padding character here, comes before alot of capitals in vanilla scripts for some reason
+
             [0xA5] = '.',
+
             [0xA6] = 'A',
             [0xA7] = 'B',
             [0xA8] = 'C',
@@ -116,22 +132,29 @@
             [0xBE] = 'Y',
             [0xBF] = 'Z',
 
+            [0xC0] = '0',
+            [0xC1] = '1',
+            [0xC2] = '2',
+            [0xC3] = '3',
+            [0xC4] = '4',
+            [0xC5] = '5',
+            [0xC6] = '6',
+            [0xC7] = '7',
+            [0xC8] = '8',
+            [0xC9] = '9',
+
             [0xD0] = '?',
             [0xD1] = '!',
+            [0xD8] = '(',
+            [0xD9] = ')',
+            [0xDb] = '"',
 
-            [0xEA] = '□',
+            [0xE1] = '-',
+            [0xE7] = '/',
+            [0xEA] = '□', // might have the order of these wrong
             [0xEB] = '×',
             [0xEC] = '○',
             [0xEE] = '△',
         };
-
-        public static Dictionary<int, string> CharsetSpecial = new Dictionary<int, string>()
-        {
-            [0x2] = "[END]",
-            [0xC1] = "[VAR1]",
-            [0xC2] = "[VAR2]",
-        };
-
-
     }
 }
