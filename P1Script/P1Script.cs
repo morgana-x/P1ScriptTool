@@ -30,12 +30,14 @@ namespace P1Script
             
             return;   
         }
-        public void ExportSource(string filepath)
+        public void ExportSource(string filepath)  
         {
-            StreamWriter writer = new StreamWriter(filepath, false);
-            Export(writer);
-            writer.Dispose();
-            writer.Close();
+            string? dir = Path.GetDirectoryName(filepath); // https://github.com/shadow-nero - Fix UNIX FileStream Path not found error
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            using (StreamWriter writer = new StreamWriter(filepath, false))  // https://github.com/shadow-nero - Neaten code
+                Export(writer);
         }
         public static void ExportCompiled(string readPath, string outPath="")
         {

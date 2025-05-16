@@ -72,10 +72,10 @@ namespace P1ScriptTool
             if (opcodebase.NumArgs == -1)
             {
                 byte argb = 0;
-                while (argb != 0xFF)
+                while (argb != 0xFF && br.BaseStream.Position < br.BaseStream.Length)
                 {
                     argb = br.ReadByte();
-                    if (argb == 0xFF) { br.BaseStream.Position -= 1; break; };
+                    if (argb == 0xFF || argb == -1) { br.BaseStream.Position -= 1; break; };
                     args.Add(argb);
                 }
             }
