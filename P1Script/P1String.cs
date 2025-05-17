@@ -100,6 +100,7 @@
             [0x61] = '\'',
             [0x65] = ',',
             [0x68] = ':',
+            [0x6C] = '>',
 
             [0x80] = '', // There is an invisible padding character here, comes before alot of capitals in vanilla scripts for some reason
 
@@ -145,16 +146,28 @@
 
             [0xD0] = '?',
             [0xD1] = '!',
+            [0xD3] = '<',
+     
+        
+            [0xD5] = '、',
+            [0xD6] = '~',
             [0xD8] = '(',
             [0xD9] = ')',
             [0xDb] = '"',
 
+            [0xE0] = '+',
             [0xE1] = '-',
             [0xE7] = '/',
-            [0xEA] = '□', // might have the order of these wrong
+            [0xE8] = '♥',
+            [0xE9] = '♠',
+
+            [0xEA] = '○',
             [0xEB] = '×',
-            [0xEC] = '○',
+            [0xEC] = '□', // might have the order of these wrong
             [0xEE] = '△',
+
+            [0xF4] = '♀',
+            [0xF6] = '￥',
         };
     }
 }

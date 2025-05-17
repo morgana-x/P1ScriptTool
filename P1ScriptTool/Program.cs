@@ -22,7 +22,7 @@
         if (script.Binary)
         {
             Console.WriteLine("Writing decompiled file...");
-            script.ExportSource(outfile == "" ? file.ToLower().Replace(".bin", ".txt") : outfile);
+            script.ExportSource(outfile == "" ? file.ToLower().Replace(".bin", "") : outfile);
             Console.WriteLine("Wrote decompiled file!");
             return;
         }

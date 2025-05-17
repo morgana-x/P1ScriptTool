@@ -12,8 +12,17 @@ namespace P1ScriptTool
             [0x04] = new P1Opcode("clear"),
             [0x05] = new P1Opcode("wait", 2),
             [0x06] = new P1Opcode("color", 2),
-            [0x07] = new P1Opcode("name"),
+
+            [0x07] = new P1Opcode("firstname"),
+            [0x08] = new P1Opcode("nickname"),
+
             [0x0E] = new P1Opcode("choice"),
+            [0x0F] = new P1Opcode("lastname"),
+
+            [0x22] = new P1Opcode("loadtextend?", 6),
+            [0x55] = new P1Opcode("loadtext", 6), // Qlonever - FF 55 is a text box command that uses 6 bytes of data, the last four bytes of which are an offset within PSX memory to read text from (the current scene file is always loaded at offset 0x8010000)
+                                                 // In over words last 4 bytes is a 32 bit integer
+
         };
 
         public string Name;

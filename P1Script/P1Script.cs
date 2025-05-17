@@ -1,12 +1,15 @@
 ﻿using P1ScriptTool;
+using static System.Collections.Specialized.BitVector32;
 
 namespace P1Script
 {
     public class P1Script
-    {
-        public List<P1Opcode> opcodes = new List<P1Opcode>();
-
+    {   
         public bool Binary = false;
+
+        public List<long> SectionOffsets = new List<long>();
+
+        public List<P1Section> Sections = new List<P1Section>();
 
         Stream stream;
         public P1Script(Stream stream, bool binary=true)
@@ -25,19 +28,29 @@ namespace P1Script
             if (!binary) return;
 
             var br = new BinaryReader(stream);
-            ReadBinary(br);
+
+            br.BaseStream.Position = 0;
+            while (true)
+            {
+                ushort offset = br.ReadUInt16();
+                if (offset == 0) break;
+                SectionOffsets.Add(offset * 0x800);
+            }
+
+            for (int i=0; i < SectionOffsets.Count; i++)
+                this.Sections.Add(new P1Section(br, SectionOffsets[i]));
+
             br.Dispose();
-            
             return;   
         }
-        public void ExportSource(string filepath)  
+        public void ExportSource(string folder)  
         {
-            string? dir = Path.GetDirectoryName(filepath); // https://github.com/shadow-nero - Fix UNIX FileStream Path not found error
+            string? dir = folder; //Path.GetDirectoryName(filepath); // https://github.com/shadow-nero - Fix UNIX FileStream Path not found error
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
-            using (StreamWriter writer = new StreamWriter(filepath, false))  // https://github.com/shadow-nero - Neaten code
-                Export(writer);
+            for (int i = 0; i < Sections.Count; i++)
+                  Sections[i].ExportText(folder);
         }
         public static void ExportCompiled(string readPath, string outPath="")
         {
@@ -61,27 +74,12 @@ namespace P1Script
         }
         public void Export(StreamWriter writer)
         {
-            foreach(var opcode in opcodes) 
-                writer.WriteLine(opcode.ToString());
+            
         }
         
         public static void Export(StreamReader sr, BinaryWriter writer)
         {
-            int numLines = 0;
-            while (!sr.EndOfStream && sr.Peek() != -1)
-            {
-                var opcode = P1Opcode.ReadOpcode(sr, ref numLines);
-                if (opcode == null) break;
-
-                opcode.WriteBinary(writer);
-            }
-        }
-        private void ReadBinary(BinaryReader br)
-        {
-            opcodes.Clear();
-            br.BaseStream.Seek(0, SeekOrigin.Begin);
-            while (br.BaseStream.Position < br.BaseStream.Length)
-                opcodes.Add(P1Opcode.ReadOpcode(br));
+          
         }
 
         public void Dispose()
