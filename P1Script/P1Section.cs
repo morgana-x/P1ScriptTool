@@ -6,7 +6,7 @@ namespace P1Script
     {
         public List<P1SubSection> SubSections = new List<P1SubSection>();
         public long Offset;
-        public long Size;
+        public ushort Size;
         
 
         public List<ushort> SubsectionSizes = new List<ushort>();
@@ -15,7 +15,6 @@ namespace P1Script
         public P1Section(BinaryReader br, long Offset)
         {
             this.Offset = Offset;
-            this.Size = Size;
             ReadBinary(br);
         }
         public P1Section(StreamReader sr)
@@ -26,26 +25,14 @@ namespace P1Script
         {
             br.BaseStream.Position = Offset; // Meta data
 
-            br.BaseStream.Position = Offset + 0x3C;
+            if (br.BaseStream.Position >= br.BaseStream.Length) return;
 
-            while (br.BaseStream.Position < br.BaseStream.Length)
-            {
-                SubsectionSizes.Add(br.ReadUInt16());
-                var val = br.ReadUInt16();
-                if (val != 32784) break;
-            }
+            br.BaseStream.Position = Offset + 4;
+            ushort Size = br.ReadUInt16();
 
-            for (int i = 0; i < SubsectionSizes.Count; i++)
-            {
-                long offset = Offset + 0x1F8 + (i > 0 ? SubsectionSizes[i - 1] : 0);
-                if (br.BaseStream.Position + offset > br.BaseStream.Length)
-                    break;
-                br.BaseStream.Position = offset;
-                SubSections.Add(new P1SubSection(br, SubsectionSizes[i]));
-            }
 
-            long nextSubSection = br.BaseStream.Position + 0x146;
 
+            SubSections.Add(new P1SubSection(br, Offset + 0x1F8, (ushort)(Size-0x1F8)));
         }
 
         private void ReadText(StreamReader sr)

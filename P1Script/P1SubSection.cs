@@ -6,11 +6,16 @@ namespace P1Script
     {
         public byte[] Metadata;
         public List<P1Opcode> Opcodes = new List<P1Opcode>();
-        public P1SubSection(BinaryReader br, long size)
+        public P1SubSection(BinaryReader br, long Offset, ushort size)
         {
-            long SectionEndPointer = br.BaseStream.Position + size;// opcodeSectionLength;
+            long SectionEndPointer = Offset + size;// opcodeSectionLength;
+
+            br.BaseStream.Position = Offset;
 
             Metadata = br.ReadBytes(0xED0);
+
+            //br.BaseStream.Position = Offset + 0x10c8;
+
             while (br.BaseStream.Position < br.BaseStream.Length && br.BaseStream.Position < SectionEndPointer)
             {
                 var opcode = P1Opcode.ReadOpcode(br);
@@ -29,10 +34,6 @@ namespace P1Script
         }
         public void WriteBinary(BinaryWriter bw)
         {
-            long dataOffset = bw.BaseStream.Position + 0xEd0;
-            bw.Write(Metadata);
-
-            bw.BaseStream.Position = dataOffset;
             foreach (var op in Opcodes)
                 op.WriteBinary(bw);
         }

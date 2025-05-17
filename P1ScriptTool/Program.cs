@@ -19,7 +19,7 @@
 
         P1Script.P1Script script = new P1Script.P1Script(file);
 
-        if (script.Binary)
+        if (file.ToLower().EndsWith(".bin"))
         {
             Console.WriteLine("Writing decompiled file...");
             script.ExportSource(outfile == "" ? file.ToLower().Replace(".bin", "") : outfile);

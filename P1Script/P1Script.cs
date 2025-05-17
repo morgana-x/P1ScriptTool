@@ -1,35 +1,29 @@
-﻿using P1ScriptTool;
-using static System.Collections.Specialized.BitVector32;
-
-namespace P1Script
+﻿namespace P1Script
 {
     public class P1Script
     {   
-        public bool Binary = false;
 
-        public List<long> SectionOffsets = new List<long>();
 
         public List<P1Section> Sections = new List<P1Section>();
 
         Stream stream;
-        public P1Script(Stream stream, bool binary=true)
+        public P1Script(Stream stream)
         {
             this.stream = stream;
-            ReadHeader(binary);
+            ReadHeader();
         }
         public P1Script(string filePath)
         {
             this.stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            ReadHeader(filePath.ToLower().EndsWith(".bin"));
+            ReadHeader();
         }
-        private void ReadHeader(bool binary)
+        private void ReadHeader()
         {
-            Binary = binary;
-            if (!binary) return;
-
             var br = new BinaryReader(stream);
 
             br.BaseStream.Position = 0;
+
+            List<long> SectionOffsets = new List<long>();
             while (true)
             {
                 ushort offset = br.ReadUInt16();
@@ -50,7 +44,7 @@ namespace P1Script
                 Directory.CreateDirectory(dir);
 
             for (int i = 0; i < Sections.Count; i++)
-                  Sections[i].ExportText(folder);
+                  Sections[i].ExportText(Path.Join(folder, i.ToString()));
         }
         public static void ExportCompiled(string readPath, string outPath="")
         {
@@ -65,21 +59,11 @@ namespace P1Script
 
             var reader = new StreamReader(readPath);
 
-            Export(reader, writer);
 
             writer.Dispose();
             writer.Close();
             reader.Dispose();
             reader.Close();
-        }
-        public void Export(StreamWriter writer)
-        {
-            
-        }
-        
-        public static void Export(StreamReader sr, BinaryWriter writer)
-        {
-          
         }
 
         public void Dispose()
