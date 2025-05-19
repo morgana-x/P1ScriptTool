@@ -31,8 +31,8 @@
                 SectionOffsets.Add(offset * 0x800);
             }
 
-            for (int i=0; i < SectionOffsets.Count; i++)
-                this.Sections.Add(new P1Section(br, SectionOffsets[i]));
+            for (int i=0; i < SectionOffsets.Count-1; i++)
+                this.Sections.Add(new P1Section(br, SectionOffsets[i], i <SectionOffsets.Count-1 ? SectionOffsets[i + 1] : br.BaseStream.Length));
 
             br.Dispose();
             return;   

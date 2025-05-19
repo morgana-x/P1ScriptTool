@@ -6,7 +6,6 @@
         {
             string str = "";
             int c = (int)'\0';
-            bool cool = false;
             while (c != -1 && (char)c != '"')
             {
                 c = sr.Read();
